@@ -1,0 +1,15 @@
+{
+  "moduleFileExtensions": ["js", "json", "ts"],
+  "rootDir": "../../..",
+  "testEnvironment": "node",
+  "testRegex": "apps/loto-game-back/tests/.*\\.e2e-spec\\.ts$",
+  "setupFilesAfterEnv": ["<rootDir>/apps/loto-game-back/tests/setup.ts"],
+  "transform": {
+    "^.+\\.(t|j)s$": "ts-jest"
+  },
+  "moduleNameMapper": {
+    "^@libs/(.*)$": "<rootDir>/libs/$1",
+    "^@src-back/(.*)$": "<rootDir>/apps/loto-game-back/src/$1"
+  },
+  "testTimeout": 30000
+}
