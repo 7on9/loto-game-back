@@ -141,23 +141,30 @@ async function seedCards() {
       })
 
       if (existingCard) {
-        console.log(`⏭️  Card ${cardId} already exists, skipping...`)
-        cardIndex++
-        continue
+        // Update existing card
+        existingCard.pairId = pairId
+        existingCard.colorTheme = parsedCard.colorTheme
+        existingCard.isActive = true
+        await queryRunner.manager.save(existingCard)
+        console.log(`🔄 Updated card: ${cardId} (pair: ${pairId}, color: ${parsedCard.colorTheme})`)
+
+        // Delete existing layouts
+        await queryRunner.manager.delete(CardLayout, { cardId })
+        console.log(`   🗑️  Deleted existing layouts`)
+      } else {
+        // Create new card
+        const card = cardRepository.create({
+          id: cardId,
+          pairId,
+          colorTheme: parsedCard.colorTheme,
+          isActive: true,
+        })
+
+        await queryRunner.manager.save(card)
+        console.log(`✅ Created card: ${cardId} (pair: ${pairId}, color: ${parsedCard.colorTheme})`)
       }
 
-      // Create card
-      const card = cardRepository.create({
-        id: cardId,
-        pairId,
-        colorTheme: parsedCard.colorTheme,
-        isActive: true,
-      })
-
-      await queryRunner.manager.save(card)
-      console.log(`✅ Created card: ${cardId} (pair: ${pairId}, color: ${parsedCard.colorTheme})`)
-
-      // Create card layouts
+      // Create/update card layouts
       const layouts: Array<CardLayout> = []
       for (let rowIdx = 0; rowIdx < parsedCard.data.length; rowIdx++) {
         const row = parsedCard.data[rowIdx]
