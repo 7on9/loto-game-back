@@ -86,3 +86,29 @@ export class EliminatePlayerDto {
   playerId: string
 }
 
+export class SelectCardDto {
+  @ApiProperty({ example: 'C01', description: 'Card ID to select' })
+  @IsString()
+  @MinLength(1)
+  cardId: string
+}
+
+export class CardAvailabilityDto {
+  @ApiProperty({ example: 'C01' })
+  id: string
+
+  @ApiProperty({ example: 'card-red' })
+  pairId: string
+
+  @ApiProperty({ example: 'red' })
+  colorTheme: string
+
+  @ApiProperty({ example: true })
+  isActive: boolean
+
+  @ApiProperty({ example: false, description: 'Whether the card is already taken' })
+  isTaken: boolean
+
+  @ApiProperty({ example: 'uuid', nullable: true, description: 'User ID who selected this card' })
+  takenByUserId?: string
+}
