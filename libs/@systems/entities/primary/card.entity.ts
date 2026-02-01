@@ -8,8 +8,8 @@ export class Card {
   @PrimaryColumn({ type: 'varchar', length: 10 })
   id: string // C01..C18
 
-  @Column({ type: 'varchar', length: 10, name: 'pair_id' })
-  pairId: string // P01..P09
+  @Column({ type: 'varchar', length: 15, name: 'pair_id' })
+  pairId: string // card-red, card-orange, card-purple, card-green, card-blue, card-yellow
 
   @Column({ type: 'varchar', length: 20, name: 'color_theme' })
   colorTheme: string

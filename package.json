@@ -21,7 +21,8 @@
     "typeorm": "typeorm-ts-node-commonjs",
     "migration:generate": "yarn typeorm migration:generate -d ./libs/@config/datasources/primary.datasource.ts --",
     "migration:run": "yarn typeorm migration:run -d ./libs/@config/datasources/primary.datasource.ts",
-    "seed:words": "ts-node -r tsconfig-paths/register apps/loto-game-back/src/scripts/seed-words.ts",
+    "seed:cards": "ts-node -r tsconfig-paths/register apps/loto-game-back/src/scripts/seed-cards.ts",
+    "seed:words": "ts-node -r tsconfig-paths/register apps/loto-game-back/src/scripts/seed-cards.ts",
     "generate:words": "ts-node -r tsconfig-paths/register apps/loto-game-back/src/scripts/generate-words-openai.ts",
     "generate:words:free": "ts-node -r tsconfig-paths/register apps/loto-game-back/src/scripts/generate-words-free.ts",
     "generate:words:groq": "ts-node -r tsconfig-paths/register apps/loto-game-back/src/scripts/generate-words-groq.ts"

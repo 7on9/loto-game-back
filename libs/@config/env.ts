@@ -21,8 +21,8 @@ export function configEnv(): IEnvConfig {
     DB_PRIMARY_SSL = false,
     DB_PRIMARY_SSL_REJECT_UNAUTHORIZED = true,
     // SWAGGER CONFIG
-    SWAGGER_TITLE = 'GUESS THE WORD API',
-    SWAGGER_DESCRIPTION = 'The Guess The Word API',
+    SWAGGER_TITLE = 'LOTO GAME API',
+    SWAGGER_DESCRIPTION = 'The LOTO GAME API',
     SWAGGER_VERSION = '1.0',
     JWT_SECRET,
     JWT_EXPIRY,
@@ -37,9 +37,9 @@ export function configEnv(): IEnvConfig {
     LOG_FILE_PATH = 'logs',
     LOG_FILE_MAX_SIZE = '20m',
     LOG_FILE_MAX_FILES = '14d',
-    LOG_REDIS_KEY = 'guess-the-word:logs',
+    LOG_REDIS_KEY = 'loto-game:logs',
     LOG_SHOW_CONTEXT = 'false',
-    APP_NAME = 'GuessTheWord',
+    APP_NAME = 'LOTO GAME',
   } = process.env
   const cfg = {
     PORT: Number(PORT),
