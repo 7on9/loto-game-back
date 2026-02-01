@@ -10,9 +10,9 @@ export enum GameMode {
 }
 
 export enum GameStatus {
-  NOT_STARTED = 'not_started',
-  IN_PROGRESS = 'in_progress',
-  FINISHED = 'finished'
+  PREPARE = 'PREPARE',
+  STARTED = 'STARTED',
+  FINISHED = 'FINISHED'
 }
 
 export enum PlayerRole {
