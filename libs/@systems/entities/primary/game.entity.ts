@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, OneToMany, OneToOne, JoinColumn, Index } from 'typeorm'
 import { User } from './user.entity'
+import { Room } from './room.entity'
 import { GameStatus } from '../../enums'
 import { GameCard } from './game-card.entity'
 import { GameNumberOrder } from './game-number-order.entity'
@@ -10,9 +11,13 @@ import { GameWinnerSnapshot } from './game-winner-snapshot.entity'
 @Entity('games')
 @Index('ix_games_status', ['status'])
 @Index('ix_games_created_at', ['createdAt'])
+@Index('ix_games_room', ['roomId'])
 export class Game {
   @PrimaryGeneratedColumn('uuid')
   id: string
+
+  @Column({ type: 'uuid', nullable: true, name: 'room_id' })
+  roomId?: string
 
   @Column({ type: 'varchar', length: 100, nullable: true })
   name?: string
@@ -39,6 +44,10 @@ export class Game {
   @ManyToOne(() => User)
   @JoinColumn({ name: 'winner_user_id' })
   winner?: User
+
+  @ManyToOne(() => Room)
+  @JoinColumn({ name: 'room_id' })
+  room?: Room
 
   @OneToMany(() => GameCard, gameCard => gameCard.game)
   gameCards: Array<GameCard>

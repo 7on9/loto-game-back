@@ -93,6 +93,13 @@ export class SelectCardDto {
   cardId: string
 }
 
+export class PickCardDto {
+  @ApiProperty({ example: 'C01', description: 'Card ID to pick' })
+  @IsString()
+  @MinLength(1)
+  cardId: string
+}
+
 export class CardAvailabilityDto {
   @ApiProperty({ example: 'C01' })
   id: string
@@ -111,4 +118,32 @@ export class CardAvailabilityDto {
 
   @ApiProperty({ example: 'uuid', nullable: true, description: 'User ID who selected this card' })
   takenByUserId?: string
+}
+
+export class StartGameResponseDto {
+  @ApiProperty({ example: 'uuid', description: 'Game ID' })
+  gameId: string
+
+  @ApiProperty({ example: 'STARTED', description: 'New game status' })
+  status: string
+
+  @ApiPropertyOptional({ example: '2024-01-01T00:00:00.000Z', description: 'Game start timestamp (only present when game is STARTED)' })
+  startedAt?: Date
+
+  @ApiProperty({ example: 90, description: 'Total numbers in the game' })
+  totalNumbers: number
+}
+
+export class CallNextNumberResponseDto {
+  @ApiProperty({ example: 42, description: 'The called number' })
+  number: number
+
+  @ApiProperty({ example: 15, description: 'Current call index (0-based)' })
+  callIndex: number
+
+  @ApiProperty({ example: 90, description: 'Total numbers in the game' })
+  totalNumbers: number
+
+  @ApiProperty({ example: false, description: 'Whether all numbers have been called' })
+  isComplete: boolean
 }

@@ -4,6 +4,7 @@ import request from 'supertest'
 import { DataSource } from 'typeorm'
 import { AppModule } from '../src/app.module'
 import { PrimaryDataSource } from '@libs/@config/datasources/primary.datasource'
+import { GlobalPrefix } from '@libs/@core/constants'
 import {
   Game,
   User,
@@ -33,12 +34,15 @@ describe('Card Selection Flow (e2e)', () => {
     'x-test-user-id': userId,
   })
 
+  const apiUrl = (path: string) => `/api/v1${path}`
+
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile()
 
     app = moduleFixture.createNestApplication()
+    app.setGlobalPrefix(GlobalPrefix.API, { exclude: ['/'] })
     app.useGlobalPipes(
       new ValidationPipe({
         whitelist: false,
@@ -168,7 +172,7 @@ describe('Card Selection Flow (e2e)', () => {
 
       // Get cards with availability
       const getCardsResponse = await request(app.getHttpServer())
-        .get(`/games/${gameId}/cards`)
+        .get(apiUrl(`/games/${gameId}/cards`))
         .set(getAuthHeader(USER_A_ID))
         .expect(200)
 
@@ -178,7 +182,7 @@ describe('Card Selection Flow (e2e)', () => {
 
       // Select card
       const selectResponse = await request(app.getHttpServer())
-        .post(`/games/${gameId}/select-card`)
+        .post(apiUrl(`/games/${gameId}/select-card`))
         .set(getAuthHeader(USER_A_ID))
         .send({ cardId })
         .expect(201)
@@ -195,7 +199,7 @@ describe('Card Selection Flow (e2e)', () => {
 
       // Verify card is marked as taken
       const getCardsAfterResponse = await request(app.getHttpServer())
-        .get(`/games/${gameId}/cards`)
+        .get(apiUrl(`/games/${gameId}/cards`))
         .set(getAuthHeader(USER_A_ID))
         .expect(200)
 
@@ -217,14 +221,14 @@ describe('Card Selection Flow (e2e)', () => {
 
       // Select first card
       await request(app.getHttpServer())
-        .post(`/games/${gameId}/select-card`)
+        .post(apiUrl(`/games/${gameId}/select-card`))
         .set(getAuthHeader(USER_A_ID))
         .send({ cardId: cardId1 })
         .expect(201)
 
       // Select second card
       await request(app.getHttpServer())
-        .post(`/games/${gameId}/select-card`)
+        .post(apiUrl(`/games/${gameId}/select-card`))
         .set(getAuthHeader(USER_A_ID))
         .send({ cardId: cardId2 })
         .expect(201)
@@ -247,20 +251,20 @@ describe('Card Selection Flow (e2e)', () => {
 
       // Select first 2 cards
       await request(app.getHttpServer())
-        .post(`/games/${gameId}/select-card`)
+        .post(apiUrl(`/games/${gameId}/select-card`))
         .set(getAuthHeader(USER_A_ID))
         .send({ cardId: cardId1 })
         .expect(201)
 
       await request(app.getHttpServer())
-        .post(`/games/${gameId}/select-card`)
+        .post(apiUrl(`/games/${gameId}/select-card`))
         .set(getAuthHeader(USER_A_ID))
         .send({ cardId: cardId2 })
         .expect(201)
 
       // Try to select third card
       const response = await request(app.getHttpServer())
-        .post(`/games/${gameId}/select-card`)
+        .post(apiUrl(`/games/${gameId}/select-card`))
         .set(getAuthHeader(USER_A_ID))
         .send({ cardId: cardId3 })
         .expect(400)
@@ -282,7 +286,7 @@ describe('Card Selection Flow (e2e)', () => {
       const cardId = testCards[0].id
 
       const response = await request(app.getHttpServer())
-        .post(`/games/${gameId}/select-card`)
+        .post(apiUrl(`/games/${gameId}/select-card`))
         .set(getAuthHeader(USER_A_ID))
         .send({ cardId })
         .expect(400)
@@ -298,7 +302,7 @@ describe('Card Selection Flow (e2e)', () => {
       const cardId = testCards[0].id
 
       const response = await request(app.getHttpServer())
-        .post(`/games/${gameId}/select-card`)
+        .post(apiUrl(`/games/${gameId}/select-card`))
         .set(getAuthHeader(USER_A_ID))
         .send({ cardId })
         .expect(400)
@@ -314,11 +318,11 @@ describe('Card Selection Flow (e2e)', () => {
       // Simulate simultaneous requests
       const [response1, response2] = await Promise.all([
         request(app.getHttpServer())
-          .post(`/games/${gameId}/select-card`)
+          .post(apiUrl(`/games/${gameId}/select-card`))
           .set(getAuthHeader(USER_A_ID))
           .send({ cardId }),
         request(app.getHttpServer())
-          .post(`/games/${gameId}/select-card`)
+          .post(apiUrl(`/games/${gameId}/select-card`))
           .set(getAuthHeader(USER_B_ID))
           .send({ cardId }),
       ])
@@ -351,11 +355,11 @@ describe('Card Selection Flow (e2e)', () => {
       // Send duplicate requests rapidly
       const [response1, response2] = await Promise.all([
         request(app.getHttpServer())
-          .post(`/games/${gameId}/select-card`)
+          .post(apiUrl(`/games/${gameId}/select-card`))
           .set(getAuthHeader(USER_A_ID))
           .send({ cardId }),
         request(app.getHttpServer())
-          .post(`/games/${gameId}/select-card`)
+          .post(apiUrl(`/games/${gameId}/select-card`))
           .set(getAuthHeader(USER_A_ID))
           .send({ cardId }),
       ])
@@ -377,7 +381,7 @@ describe('Card Selection Flow (e2e)', () => {
       const invalidCardId = 'C99'
 
       const response = await request(app.getHttpServer())
-        .post(`/games/${gameId}/select-card`)
+        .post(apiUrl(`/games/${gameId}/select-card`))
         .set(getAuthHeader(USER_A_ID))
         .send({ cardId: invalidCardId })
         .expect(404)
@@ -408,7 +412,7 @@ describe('Card Selection Flow (e2e)', () => {
 
       // Try to select same card in game 1
       const response = await request(app.getHttpServer())
-        .post(`/games/${gameId}/select-card`)
+        .post(apiUrl(`/games/${gameId}/select-card`))
         .set(getAuthHeader(USER_A_ID))
         .send({ cardId })
         .expect(201) // Should succeed - cards are per-game
@@ -431,7 +435,7 @@ describe('Card Selection Flow (e2e)', () => {
 
       // Select card successfully
       await request(app.getHttpServer())
-        .post(`/games/${gameId}/select-card`)
+        .post(apiUrl(`/games/${gameId}/select-card`))
         .set(getAuthHeader(USER_A_ID))
         .send({ cardId })
         .expect(201)
@@ -444,7 +448,7 @@ describe('Card Selection Flow (e2e)', () => {
 
       // Try to select again (should fail - card is taken)
       await request(app.getHttpServer())
-        .post(`/games/${gameId}/select-card`)
+        .post(apiUrl(`/games/${gameId}/select-card`))
         .set(getAuthHeader(USER_B_ID))
         .send({ cardId })
         .expect(400)
@@ -462,7 +466,7 @@ describe('Card Selection Flow (e2e)', () => {
 
       // Select card
       const response = await request(app.getHttpServer())
-        .post(`/games/${gameId}/select-card`)
+        .post(apiUrl(`/games/${gameId}/select-card`))
         .set(getAuthHeader(USER_A_ID))
         .send({ cardId })
         .expect(201)
@@ -486,7 +490,7 @@ describe('Card Selection Flow (e2e)', () => {
 
       // User A selects card - should use USER_A_ID from token
       const response = await request(app.getHttpServer())
-        .post(`/games/${gameId}/select-card`)
+        .post(apiUrl(`/games/${gameId}/select-card`))
         .set(getAuthHeader(USER_A_ID))
         .send({ cardId })
         .expect(201)
@@ -509,20 +513,20 @@ describe('Card Selection Flow (e2e)', () => {
 
       // Select 2 cards
       await request(app.getHttpServer())
-        .post(`/games/${gameId}/select-card`)
+        .post(apiUrl(`/games/${gameId}/select-card`))
         .set(getAuthHeader(USER_A_ID))
         .send({ cardId: cardId1 })
         .expect(201)
 
       await request(app.getHttpServer())
-        .post(`/games/${gameId}/select-card`)
+        .post(apiUrl(`/games/${gameId}/select-card`))
         .set(getAuthHeader(USER_A_ID))
         .send({ cardId: cardId2 })
         .expect(201)
 
       // Try to bypass limit (backend enforces)
       await request(app.getHttpServer())
-        .post(`/games/${gameId}/select-card`)
+        .post(apiUrl(`/games/${gameId}/select-card`))
         .set(getAuthHeader(USER_A_ID))
         .send({ cardId: cardId3 })
         .expect(400)
@@ -541,14 +545,14 @@ describe('Card Selection Flow (e2e)', () => {
 
       // Select card
       await request(app.getHttpServer())
-        .post(`/games/${gameId}/select-card`)
+        .post(apiUrl(`/games/${gameId}/select-card`))
         .set(getAuthHeader(USER_A_ID))
         .send({ cardId })
         .expect(201)
 
       // Simulate page refresh - get cards again
       const response = await request(app.getHttpServer())
-        .get(`/games/${gameId}/cards`)
+        .get(apiUrl(`/games/${gameId}/cards`))
         .set(getAuthHeader(USER_A_ID))
         .expect(200)
 
@@ -572,7 +576,7 @@ describe('Card Selection Flow (e2e)', () => {
       const requests = testCards.slice(0, Math.min(18, testCards.length)).map((card, index) => {
         const userId = index % 2 === 0 ? USER_A_ID : USER_B_ID
         return request(app.getHttpServer())
-          .post(`/games/${gameId}/select-card`)
+          .post(apiUrl(`/games/${gameId}/select-card`))
           .set(getAuthHeader(userId))
           .send({ cardId: card.id })
       })
@@ -610,7 +614,7 @@ describe('Card Selection Flow (e2e)', () => {
 
       // Select card
       const response = await request(app.getHttpServer())
-        .post(`/games/${gameId}/select-card`)
+        .post(apiUrl(`/games/${gameId}/select-card`))
         .set(getAuthHeader(USER_A_ID))
         .send({ cardId })
         .expect(201)
@@ -646,7 +650,7 @@ describe('Card Selection Flow (e2e)', () => {
       const cardId = testCards[0].id
 
       await request(app.getHttpServer())
-        .post(`/games/${gameId}/select-card`)
+        .post(apiUrl(`/games/${gameId}/select-card`))
         .send({ cardId })
         .expect(401)
     })
@@ -656,7 +660,7 @@ describe('Card Selection Flow (e2e)', () => {
       const cardId = testCards[0].id
 
       const response = await request(app.getHttpServer())
-        .post(`/games/${invalidGameId}/select-card`)
+        .post(apiUrl(`/games/${invalidGameId}/select-card`))
         .set(getAuthHeader(USER_A_ID))
         .send({ cardId })
         .expect(404)
@@ -666,7 +670,7 @@ describe('Card Selection Flow (e2e)', () => {
 
     it('should reject request with invalid card ID format', async () => {
       const response = await request(app.getHttpServer())
-        .post(`/games/${gameId}/select-card`)
+        .post(apiUrl(`/games/${gameId}/select-card`))
         .set(getAuthHeader(USER_A_ID))
         .send({ cardId: '' })
         .expect(400)

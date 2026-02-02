@@ -1,9 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm'
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany, JoinColumn, Index, Unique } from 'typeorm'
 import { User } from './user.entity'
 import { Group } from './group.entity'
+import { Game } from './game.entity'
 import { RoomStatus } from '../../enums'
 
 @Entity('rooms')
+@Unique('ux_rooms_code', ['code'])
+@Index('ix_rooms_code', ['code'])
 export class Room {
   @PrimaryGeneratedColumn('uuid')
   id: string
@@ -28,6 +31,9 @@ export class Room {
   @Column({ name: 'game_mode', nullable: true })
   gameMode?: string
 
+  @Column({ type: 'varchar', length: 6 })
+  code: string // Unique 6-digit code (000000-999999)
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date
 
@@ -41,5 +47,8 @@ export class Room {
   @ManyToOne(() => Group, group => group.rooms)
   @JoinColumn({ name: 'group_id' })
   group?: Group
+
+  @OneToMany(() => Game, game => game.room)
+  games: Array<Game>
 }
 
