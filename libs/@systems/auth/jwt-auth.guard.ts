@@ -19,8 +19,12 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 
     // Allow mock token in test environment
     if (process.env.NODE_ENV === 'test' && token === 'mock-jwt-token') {
+      // Support test user ID via custom header for testing multiple users
+      const testUserId = request.headers['x-test-user-id']
+      const defaultUserId = '550e8400-e29b-41d4-a716-446655440000'
+      
       request.user = {
-        userId: '550e8400-e29b-41d4-a716-446655440000',
+        userId: testUserId || defaultUserId,
         email: 'test@example.com',
         username: 'testuser',
       }

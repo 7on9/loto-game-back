@@ -7,11 +7,23 @@ export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
-  @Column({ unique: true, length: 50 })
+  @Column({ unique: true })
+  email: string
+
+  @Column()
+  password: string
+
+  @Column()
   username: string
+
+  @Column({ nullable: true })
+  avatar?: string
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date
+
+  @UpdateDateColumn({ name: 'updated_at' })
+  updatedAt: Date
 
   @OneToMany(() => Group, group => group.creator)
   groups: Array<Group>
